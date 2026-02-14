@@ -22,7 +22,6 @@ def embed_texts(model: SentenceTransformer, texts: List[str]) -> np.ndarray:
 
 
 def build_faiss_index(vectors: np.ndarray) -> faiss.Index:
-    # vectors already normalized -> inner product == cosine similarity
     dim = vectors.shape[1]
     index = faiss.IndexFlatIP(dim)
     index.add(vectors)
