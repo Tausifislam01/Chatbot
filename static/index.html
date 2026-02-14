@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Mysoft Heaven RAG Chat</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 900px; margin: 24px auto; }
+    #log { border: 1px solid #ddd; padding: 12px; height: 420px; overflow: auto; }
+    .q { font-weight: 600; margin-top: 12px; }
+    .a { margin-top: 6px; white-space: pre-wrap; }
+    .src { font-size: 12px; color: #555; margin-top: 6px; }
+    input { width: 78%; padding: 10px; }
+    button { padding: 10px 14px; }
+  </style>
+</head>
+<body>
+  <h2>Mysoft Heaven (BD) Ltd — RAG Chatbot</h2>
+  <div id="log"></div>
+  <div style="margin-top:12px;">
+    <input id="q" placeholder="Ask a question about the provided company docs..." />
+    <button onclick="send()">Send</button>
+  </div>
+
+<script>
+async function send() {
+  const q = document.getElementById("q").value.trim();
+  if (!q) return;
+  const log = document.getElementById("log");
+  log.innerHTML += `<div class="q">Q: ${q}</div>`;
+  document.getElementById("q").value = "";
+
+  const res = await fetch("/chat", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({question: q})
+  });
+  const data = await res.json();
+  log.innerHTML += `<div class="a">A: ${data.answer}</div>`;
+  if (data.sources?.length) {
+    const s = data.sources.map(x => `${x.source} p.${x.page} (score ${x.score.toFixed(3)})`).join(" | ");
+    log.innerHTML += `<div class="src">Sources: ${s}</div>`;
+  }
+  log.scrollTop = log.scrollHeight;
+}
+</script>
+</body>
+</html>
